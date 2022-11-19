@@ -1,52 +1,122 @@
+#include <string.h>
+#include <math.h>
+
 #include "fourier.h"
 
-/* Move even-numbered elements to the left*/
-static void split_array(double _Complex array[], size_t size);
+/* 
+ * Move even-numbered elements to the left
+ * TODO: avoid buffer usage, restructure in-place
+ */
+static inline int split_array(double _Complex array[], size_t size, double _Complex buffer[] = NULL);
 
+/*
+ * Butterfly-transform in FFT
+ */
+static inline int butterfly(double _Complex array[], size_t size, int inverse = 0);
 
-/* Previous element in cyclic permutation */
-static inline size_t prev_in_cycle(size_t cur, size_t n) { return 2*cur % n + (2 * cur >= n); }
+/*
+ * Fast Fourier-transform
+ */
+static int fft(
+            double _Complex coeffs[],
+            size_t size,
+            int inverse = 0,
+            double _Complex buffer[] = NULL);
 
-/* Next element in cyclic permutation */
-static inline size_t next_in_cycle(size_t cur, size_t n) { return cur / 2 + (n / 2) * (cur % 2); }
-
-static void split_array(double _Complex array[], size_t size)
+int fourier_transform(double _Complex coeffs[], size_t size)
 {
-    /*
-        Because each permutation is composition of
-        independent cyclic permutations, we can find
-        those cycles and perform them in any particular
-        order for any permutation.
+    return fft(coeffs, size, 0);
+}
 
-        In this case, next and previous elements in cycles
-        are calculated with `next_in_cycle` and `prev_in_cycle`.
+int inverse_fourier_transform(double _Complex coeffs[], size_t size)
+{
+    return fft(coeffs, size, 1);
+}
 
-        For n = 16 cycles are following:
-            (1 8 4 2)(3 9 12 6)(5 10)(7 11 13 14)(0)(15)
+static int fft(
+            double _Complex coeffs[],
+            size_t size,
+            int inverse,
+            double _Complex buffer[])
+{
+    if (size == 1) return 0; /* trivial case: nothing to be done */
 
-        Note that all non-trivial cycles start from an odd number
-        less than n/2. TODO: proof
-    */
-    for (size_t i = 1; i < size / 2; i += 2)
+    if (size & (size - 1))
+        return -1;
+
+    int allocated = 0;
+    if (!buffer)
     {
-        size_t cur = i;
-        
-        /*
-            To perform cycle of size k, we need to swap first
-            element in cycle with previous one k-1 times.
-
-            (1842) = (8421) = (84)(42)(21)
-            Note, that cycle composition is performed right to left.
-        */
-
-        while ((cur = prev_in_cycle(cur, size)) != i) /* while loop not closed*/
-        {
-            size_t prv = next_in_cycle(cur, size);
-
-            /* swap elements */
-            double _Complex tmp = array[cur];
-            array[cur] = array[prv];
-            array[prv] = tmp;
-        }
+        buffer = (double _Complex*) calloc(size / 2, sizeof(*buffer));
+        allocated = 1;
     }
+
+    split_array(coeffs, size, buffer);  /* Partition coefficient array */
+
+    /* Recursively solve for n/2 */
+    fft(coeffs,          size/2, inverse, buffer);
+    fft(coeffs + size/2, size/2, inverse, buffer);
+
+    /* Combine solutions for n/2 */
+    butterfly(coeffs, size, inverse);
+
+    if (allocated) free(buffer);
+
+    return 0;
+}
+
+static inline int butterfly(double _Complex array[], size_t size, int inverse)
+{
+    if (size & (size - 1))
+        return -1;
+
+    double angle = 2 * M_PI / size;
+
+    /* Rotate in opposite direction for inverse transform */
+    if (inverse) angle *= -1;
+
+    double _Complex ru = CMPLX(cos(angle), sin(angle)); /* first primitive root of unity */
+    double _Complex twiddle = 1; /* twiddle factor */
+    for (size_t i = 0; i < size / 2; i++)
+    {
+        double _Complex x0 = array[i];
+        double _Complex x1 = array[size/2 + i];
+
+        array[i]          = x0 + twiddle * x1;
+        array[size/2 + i] = x0 - twiddle * x1;
+
+        if (inverse)    /* Divide by 2 on each step for inverse transform */
+        {
+            array[i]          /= 2;
+            array[size/2 + i] /= 2;
+        }
+
+        twiddle *= ru;      /* next root of unity */
+    }
+
+    return 0;
+}
+
+static inline int split_array(double _Complex array[], size_t size, double _Complex buffer[])
+{
+    if (size & (size - 1))
+        return -1;
+
+    int allocated = 0;
+    if (!buffer)
+    {
+        buffer = (double _Complex*) calloc(size / 2, sizeof(*buffer));
+        allocated = 1;
+    }
+
+    for (size_t i = 0; i < size; i += 2)
+    {
+        array [i/2] = array[i];
+        buffer[i/2] = array[i + 1];
+    }
+    memcpy(array + size/2, buffer, size/2);
+
+    if (allocated) free(buffer);
+
+    return 0;
 }
