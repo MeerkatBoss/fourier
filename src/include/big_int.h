@@ -24,13 +24,13 @@ typedef long long int_chunk_t;
  * @brief 
  * Big integer base
  */
-const int_chunk_t BIGINT_BASE = 1e8;
+static const int_chunk_t BIGINT_BASE = 1e8;
 
 /**
  * @brief 
  * Big integer default chunk count
  */
-const size_t DEFAULT_CHUNKS = 16;
+static const size_t DEFAULT_CHUNKS = 16;
 
 /**
  * @brief 

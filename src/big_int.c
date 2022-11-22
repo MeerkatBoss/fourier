@@ -1,5 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
+#include <ctype.h>
+#include <stdio.h>
 
 #include "fourier.h"
 #include "big_int.h"
