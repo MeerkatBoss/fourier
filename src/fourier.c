@@ -118,7 +118,7 @@ static inline int split_array(double _Complex array[], size_t size, double _Comp
         array [i/2] = array[i];
         buffer[i/2] = array[i + 1];
     }
-    memcpy(array + size/2, buffer, size/2);
+    memcpy(array + size/2, buffer, sizeof(*buffer)*size/2);
 
     if (allocated) free(buffer);
 

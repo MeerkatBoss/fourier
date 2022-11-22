@@ -117,9 +117,14 @@ big_int big_int_mul(const big_int * a, const big_int * b)
 
     result.sign = a->sign * b->sign;
 
+    free(a_cx);
+    free(b_cx);
+    free(res_cx);
+
     return result;
 }
 
+/*
 big_int string_to_big_int(const char * str)
 {
     size_t len = strlen(str);
@@ -134,7 +139,6 @@ big_int string_to_big_int(const char * str)
         .sign        = 0
     };
 
-    while (isspace(*str)) str++;
     if (*str == '-')
     {
         result.sign = -1;
@@ -144,17 +148,18 @@ big_int string_to_big_int(const char * str)
         str++;
 
     size_t it = 0;
-    int n_read = 0;
     unsigned number = 0;
-    while (sscanf(str, "%7u%n", &number, &n_read) == 1) 
+    for (size_t shift = len; shift >= 7)
+    while (1) 
     {
+
         result.chunks[it++] = number;
-        if (n_read < 7) break;
     }
     try_shrink(&result);
     if (is_zero(&result)) result.sign = 0;
     return result;
 }
+*/
 
 void big_int_to_string(const big_int* num, char strbuf[])
 {
@@ -167,7 +172,7 @@ void big_int_to_string(const big_int* num, char strbuf[])
     pos += n_write;
     while(it >= 0)
     {
-        sprintf(strbuf + pos, "%lld%n", num->chunks[it--], &n_write);
+        sprintf(strbuf + pos, "%07lld%n", num->chunks[it--], &n_write);
         pos += n_write;
     }
     return;
@@ -178,10 +183,11 @@ static void carry(big_int *num)
     int_chunk_t car = 0;
     for (size_t i = 0; i < num->chunk_count; i++)
     {
-        num->chunks[i] += car;
 
+        num->chunks[i] += car;
+        
         car = num->chunks[i] / BIGINT_BASE;
-        num->chunks[i] %= car;
+        num->chunks[i] %= BIGINT_BASE;
 
         /* Negative digits require extra carrying */
         if (num->chunks[i] < 0)

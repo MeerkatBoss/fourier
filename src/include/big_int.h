@@ -24,7 +24,7 @@ typedef long long int_chunk_t;
  * @brief 
  * Big integer base
  */
-static const int_chunk_t BIGINT_BASE = 1e8;
+static const int_chunk_t BIGINT_BASE = 1e7;
 
 /**
  * @brief 
