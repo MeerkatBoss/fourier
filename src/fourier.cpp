@@ -7,7 +7,10 @@
  * Move even-numbered elements to the left
  * TODO: avoid buffer usage, restructure in-place
  */
-static inline int split_array(double _Complex array[], size_t size, double _Complex buffer[] = NULL);
+static inline int split_array(
+                            double _Complex array[],
+                            size_t size,
+                            double _Complex buffer[] = NULL);
 
 /*
  * Butterfly-transform in FFT
