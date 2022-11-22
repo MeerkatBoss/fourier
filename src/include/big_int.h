@@ -39,14 +39,17 @@ const size_t DEFAULT_CHUNKS = 16;
 struct big_int
 {
     /**
-     * @brief 
-     * Chunks of a number (digits in base `BIGINT_BASE`)
+     * @brief Chunks of a number (digits in base `BIGINT_BASE`)
      */
     int_chunk_t *chunks;
 
     /**
-     * @brief 
-     * 1 if number is positive, -1 if negative, 0 if zero
+     * @brief Capacity of `chunks` array
+     */
+    size_t chunk_count;
+
+    /**
+     * @brief 1 if number is positive, -1 if negative, 0 if zero
      */
     signed char sign;
 };
@@ -110,5 +113,27 @@ big_int big_int_div(const big_int* a, const big_int* b);
  * @todo Add implementation
  */
 big_int big_int_mod(const big_int* a, const big_int* b);
+
+/**
+ * @brief Compare two big integers
+ * @param[in] a `big_int` instance
+ * @param[in] b `big_int` instance
+ * @return -1 if a < b, 1 if a > b, 0 if a = b
+ */
+int big_int_cmp(const big_int* a, const big_int* b);
+
+/**
+ * @brief Read big integer from string
+ * @param[in] str String representation of a number
+ * @return Parsed big integer
+ */
+big_int string_to_big_int(const char *str);
+
+/**
+ * @brief Convert big integer to its string representation
+ * @param[in] num `big_int` instance
+ * @param[out] strbuf Output buffer
+ */
+void big_int_to_string(const big_int* num, char strbuf[] = NULL);
 
 #endif
