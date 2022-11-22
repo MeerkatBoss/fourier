@@ -42,4 +42,4 @@ int fourier_transform(double _Complex coeffs[], size_t size);
  */
 int inverse_fourier_transform(double _Complex coeffs[], size_t size);
 
-#endif __FOURIER_H /* fourier.h */
+#endif

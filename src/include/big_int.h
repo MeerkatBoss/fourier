@@ -18,7 +18,7 @@
  * @brief 
  * Big integer chunk type
  */
-typedef unsigned long long int_chunk_t;
+typedef long long int_chunk_t;
 
 /**
  * @brief 
@@ -36,7 +36,7 @@ const size_t DEFAULT_CHUNKS = 16;
  * @brief 
  * Big integer
  */
-struct big_int
+typedef struct
 {
     /**
      * @brief Chunks of a number (digits in base `BIGINT_BASE`)
@@ -52,15 +52,14 @@ struct big_int
      * @brief 1 if number is positive, -1 if negative, 0 if zero
      */
     signed char sign;
-};
+} big_int;
 
 /**
  * @brief Construct big integer from its value
  * @param[in] value Big integer value
  * @return Constructed big integer
  */
-[[nodiscard]]
-big_int big_int_ctor(long long value = 0);
+big_int big_int_ctor(long long value);
 
 /**
  * @brief Destroy `big_int` instance. Free associated resources
@@ -134,6 +133,6 @@ big_int string_to_big_int(const char *str);
  * @param[in] num `big_int` instance
  * @param[out] strbuf Output buffer
  */
-void big_int_to_string(const big_int* num, char strbuf[] = NULL);
+void big_int_to_string(const big_int* num, char strbuf[]);
 
 #endif

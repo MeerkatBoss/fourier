@@ -1,5 +1,6 @@
 #include <string.h>
 #include <math.h>
+#include <stdlib.h>
 
 #include "fourier.h"
 
@@ -10,12 +11,12 @@
 static inline int split_array(
                             double _Complex array[],
                             size_t size,
-                            double _Complex buffer[] = NULL);
+                            double _Complex buffer[]);
 
 /*
  * Butterfly-transform in FFT
  */
-static inline int butterfly(double _Complex array[], size_t size, int inverse = 0);
+static inline int butterfly(double _Complex array[], size_t size, int inverse);
 
 /*
  * Fast Fourier-transform
@@ -23,17 +24,17 @@ static inline int butterfly(double _Complex array[], size_t size, int inverse = 
 static int fft(
             double _Complex coeffs[],
             size_t size,
-            int inverse = 0,
-            double _Complex buffer[] = NULL);
+            int inverse,
+            double _Complex buffer[]);
 
 int fourier_transform(double _Complex coeffs[], size_t size)
 {
-    return fft(coeffs, size, 0);
+    return fft(coeffs, size, 0, NULL);
 }
 
 int inverse_fourier_transform(double _Complex coeffs[], size_t size)
 {
-    return fft(coeffs, size, 1);
+    return fft(coeffs, size, 1, NULL);
 }
 
 static int fft(
