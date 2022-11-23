@@ -118,6 +118,9 @@ big_int big_int_mod(const big_int* a, const big_int* b);
  * @param[in] a `big_int` instance
  * @param[in] b `big_int` instance
  * @return -1 if a < b, 1 if a > b, 0 if a = b
+ * 
+ * @warning Not Implemented
+ * @note Add implementation
  */
 int big_int_cmp(const big_int* a, const big_int* b);
 
@@ -125,6 +128,9 @@ int big_int_cmp(const big_int* a, const big_int* b);
  * @brief Read big integer from string
  * @param[in] str String representation of a number
  * @return Parsed big integer
+ * 
+ * @warning Not Implemented
+ * @note Add implementation
  */
 big_int string_to_big_int(const char *str);
 
