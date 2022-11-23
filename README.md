@@ -1,4 +1,6 @@
-# Fast fourier transform
+# Fast Fourier transform
+
+Fast Fourier transform functions and big integer implementation.
 
 ## Prerequisites
 - **CMake** version 3.16.3 or higher
