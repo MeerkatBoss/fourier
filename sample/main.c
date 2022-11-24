@@ -5,8 +5,8 @@
 
 int main()
 {
-    big_int a = big_int_ctor(1234567891011121314);
-    big_int b = big_int_ctor(1413121110987654321);
+    big_int a = string_to_big_int("123456789101112131415161718");
+    big_int b = string_to_big_int("181716151413121110987654321");
     big_int c = big_int_mul(&a, &b);
     char *buffer = (char*)calloc(7 * c.chunk_count, sizeof(*buffer));
     big_int_to_string(&a, buffer);

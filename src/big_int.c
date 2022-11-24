@@ -124,7 +124,6 @@ big_int big_int_mul(const big_int * a, const big_int * b)
     return result;
 }
 
-/*
 big_int string_to_big_int(const char * str)
 {
     size_t len = strlen(str);
@@ -136,30 +135,41 @@ big_int string_to_big_int(const char * str)
     big_int result = {
         .chunks      = (int_chunk_t*)calloc(size, sizeof(int_chunk_t)),
         .chunk_count = size,
-        .sign        = 0
+        .sign        = 1 
     };
 
-    if (*str == '-')
+
+    while (isspace(*str)) { str++; len--; }
+    if (*str == '-' || *str == '+')
     {
-        result.sign = -1;
+        if(*str == '-') result.sign = -1;
         str++;
+        len--;
     }
-    if (*str == '+')
-        str++;
 
     size_t it = 0;
-    unsigned number = 0;
-    for (size_t shift = len; shift >= 7)
-    while (1) 
+    long long pow10 = 1;
+    long long cur_number = 0;
+    for (char* c = str + len - 1; c >= str; c--)
     {
-
-        result.chunks[it++] = number;
+        if (!isdigit(*c)) break;
+        long long digit = *c - '0';
+        cur_number += digit*pow10;
+        pow10 *= 10;
+        if (pow10 == BIGINT_BASE)
+        {
+            result.chunks[it++] = cur_number;
+            pow10 = 1;
+            cur_number = 0;
+        }
     }
-    try_shrink(&result);
+    result.chunks[it++] = cur_number;
+
     if (is_zero(&result)) result.sign = 0;
+    try_shrink(&result);
+
     return result;
 }
-*/
 
 void big_int_to_string(const big_int* num, char strbuf[])
 {
